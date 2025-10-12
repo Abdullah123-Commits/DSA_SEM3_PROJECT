@@ -1,4 +1,8 @@
 12 Oct Changes:
     * introduced a new class called Date in order to incorporate mfg date & exp date in the item class.
 
-    
+    * converting the list (array based ) of inventory class into doubly linked list
+
+    * add funtion to add item in the list(doubly)
+
+    * remove functions banaye in inventory class.

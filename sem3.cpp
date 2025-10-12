@@ -70,34 +70,127 @@ class Item {
         // print mfg date
         void printMfgDate() { mfgDate.printDate(); }
         void printExpDate() { expDate.printDate(); }
+        // print func for item info
+        void printItemInfo() {
+            cout << "ID: " << getId() << " | Name: " << getName() << "| unit Price: " << getUnitPrice() << endl;
+            printMfgDate();printExpDate();
+        }
 };
+
+class ItemNode {
+    public:
+        Item item;
+        ItemNode* next;
+        ItemNode* prev;
+    // constructor
+    ItemNode(const Item& obj) {
+        this->item = obj;
+        this->next = NULL;
+        this->prev = NULL;
+    }
+};
+
 
 class Inventory {
     private:
         // data members
         int count=0;    // static variable to keep the item count in the inventory; removed static ; it will be illogical in case of multiple inventory
         int currentSpace=0;
-        Item* list;
+        ItemNode* head; // doubly linked list
+        ItemNode* tail;
     public:
-        // methods     * THIS CLASS WOULD NEED RULE OF THREE 
         // getters
         int getCount() const { return count; }
         int getCurrentSpace() const { return currentSpace; }
-        Inventory(int space) {
-            this->list = new Item[space]; // allocate space as needed; 
+        // simple constructor
+        Inventory() {
+            this->head = NULL; // the list will be empty initially
+            this->tail = NULL;
         }
-        // copy constructor
-        Inventory (const Inventory& other) {
-            this->count = other.getCount();
-            this->list = NULL;
-            this->currentSpace = other.getCurrentSpace();
-            this->list = new Item[this->currentSpace];
-            // after allocation copy the data
-            for (int i=0; i<other.getCurrentSpace; i++) {
-                this->list[i] = other.list[i];
+        // FUNCTION to add an item to the list
+        void addItem(const Item& itemToBeAdded) {
+            ItemNode* newEntry = new ItemNode(itemToBeAdded);
+            // Case # 1: if the list is empty then insert @ head
+            if (head == NULL) {
+                head = newEntry;
+                tail = newEntry;    // if no of elements in list =1 then head = tail
             }
-        } 
-        
+            // Case # 2: if list is not empty then insert @ tail
+            tail->next = newEntry;
+            tail = newEntry;
+            return;
+        }
+        // FUNCTION to remove item by id
+        void removeItemById(int id) {
+            if (head->item.getId() == id) {
+                removeAtHead();
+                return;
+            }
+            ItemNode* current = head;
+            while(current->next!=NULL) {
+                if (current->item.getId() == id) {
+                    current->prev->next = current->next; 
+                    current->next->prev = current->prev;
+                    delete current;
+                    return;
+                }
+                current = current->next;
+            }
+            // tail ki deletion
+            if (current->item.getId() == id) {
+                removeAtTail();
+                return;
+            }
+        }
+        // remove at head
+        void removeAtHead() {
+            //  Case 1 if wala body agar list ka asize = 1 ho OR head = tail
+            ItemNode *temp=head;
+            if (temp!=NULL && temp == tail) {
+                head = NULL;
+                tail = NULL;
+                delete temp;
+                return;
+            }
+            //case 2 simple head deletion 
+            else if(temp!=NULL) {
+                head = temp->next;
+                head->prev = NULL;
+                delete temp;
+                return;
+            } else {
+                cout << "list is empty" << endl;
+                return;
+            }
+        }
+        // remove at tail
+        void removeAtTail() {
+            ItemNode *temp=tail;
+            if (head == NULL) {
+                cout << "list empty";
+                return;
+            } 
+            if (head==tail) {
+                head = NULL;
+                tail = NULL;
+                delete temp;
+                return;
+            }
+            // simple tail deletion
+            tail = temp->prev;
+            tail->next = NULL;
+            delete temp;
+            return;
+        }
+        // display FUNCTION TO PRINT THE INVENTORY
+        void printInventory() {
+            ItemNode* temp = head;
+            while(temp!=NULL) {
+                temp->item.printItemInfo();
+                temp = temp->next;
+            }
+            return;
+        }
 };
 
 
