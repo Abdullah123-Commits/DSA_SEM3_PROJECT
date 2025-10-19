@@ -1,10 +1,10 @@
-// ADD TEVENUE DATA ATTRIBUTE IN ITEM CLASS IMP
-// MAKE FUNCTION FOR SELLITEM()
+// ADD REVENUE DATA ATTRIBUTE IN ITEM CLASS IMP     (DONE)
+// MAKE FUNCTION FOR SELLITEM()                     (DONE)
 // UNDO WITH STACK (BAAD MAY DEKHLENA)
 // IMPLEMENTING MERGE/ QUICK SORT()
 // BST FOR FAST SEARCHING
-// TOP SELLER / LEAST SELLER TOTAL REVENUE
-//
+// TOP SELLER / LEAST SELLER TOTAL REVENUE          (DONE)
+//RESTOCK FUNCTION                                  (DONE)
 #include <iostream>
 #include <string>
 using namespace std;
@@ -225,24 +225,24 @@ class Inventory {
                     temp = temp->next;
                 }
             } else {
-                cout << "There is no item with ID" << id << "in the inventory" << endl;
-                return;
+            cout << "There is no item with ID" << id << "in the inventory" << endl;
+            return;
             }
         }
         // linear search based ISFOUND() function
         bool isFound(int id) {
             ItemNode* temp = head;
             while (temp != NULL) {
-            if (temp->item.getId() == id) {
-            return true;
-            }
-            temp = temp->next;
+                if (temp->item.getId() == id) {
+                    return true;
+                }
+                temp = temp->next;
             }
             return false;
         }
         // FUNCTION TO SIMULATE SELLITEM()
         void sellItem(int id, int quantityToSell) {
-            ItemNode *temp = head;
+           ItemNode *temp = head;
             while(temp!=NULL) {
                 if (temp->item.getId() == id) {
                     if (isAvailable(id, quantityToSell)) {
@@ -251,6 +251,7 @@ class Inventory {
                         double currentRevenue = temp->item.getRevenue();
                         temp->item.setQuantity(currentQuantity-quantityToSell);
                         temp->item.setRevenue(currentRevenue+(quantityToSell*unitPrice));
+                        temp->item.setSoldCount(quantityToSell);
                         cout << "Item sold successfully" << endl;
                         return;
                     } else {
@@ -258,10 +259,10 @@ class Inventory {
                         return;
                     }
                 }
-                    temp = temp->next;
-                }
+                temp = temp->next;
+            }
             cout<<"Invalid ID entered !\n";
-            return; 
+            return;
         }
         // isAvailable()
         bool isAvailable(int id, int amountRequired) {
@@ -278,14 +279,68 @@ class Inventory {
         }
         // DESTRUCTOR
         ~Inventory() {
-                    ItemNode* temp = head;
-                    while (temp) {
-                        ItemNode* toDelete = temp;
-                        temp = temp->next;
-                        delete toDelete;
+            ItemNode* temp = head;
+            while (temp) {
+                ItemNode* toDelete = temp;
+                temp = temp->next;
+                delete toDelete;
+            }
+        }
+        // FUNCTION TO RESTOCK ANY ITEM
+        void restockItem(int id, int quantityToRestock) {
+            if (isFound(id)) {
+                ItemNode* temp = head;
+                while(temp != NULL) {
+                    if (temp->item.getId() == id) {
+                        int currentQuantity = temp->item.getQuantity();
+                        temp->item.setQuantity(currentQuantity+quantityToRestock);
+                        cout << "Item having ID:" << id << "has been restocked successfully" << endl;
+                        return;
                     }
+                    temp = temp->next;
                 }
+            } else {
+                cout << "Item against ID:" << id << "is not found in the inventory" << endl;
+                return;
+            }
+        }
+        // FUNCTION TO FIND THE MOST SELLING ITEM
+        ItemNode* findMostSellingItem() {
+            if (head == NULL) {
+                cout << "Inventory is empty!" << endl;
+                return NULL;
+            }
+            ItemNode* temp = head;
+            ItemNode* mostSelling = head;
+            int maxSold = head->item.getSoldCount();
+            while (temp != NULL) {
+                if (temp->item.getSoldCount() > maxSold) {
+                    maxSold = temp->item.getSoldCount();
+                    mostSelling = temp;
+                }
+                temp = temp->next;
+            }
+            return mostSelling;
+        }
 
+        // FUNCTION TO FIND THE LEAST SELLING ITEM
+        ItemNode* findLeastSellingItem() {
+            if (head == NULL) {
+                cout << "Inventory is empty!" << endl;
+                return NULL;
+            }
+            ItemNode* temp = head;
+            ItemNode* leastSelling = head;
+            int minSold = head->item.getSoldCount();
+            while (temp != NULL) {
+                if (temp->item.getSoldCount() < minSold) {
+                    minSold = temp->item.getSoldCount();
+                    leastSelling = temp;
+                }
+                temp = temp->next;
+            }
+            return leastSelling;
+        }
 };
 
 
